@@ -1,11 +1,3 @@
-/*
- * @Author: Frt001 2067314783@qq.com
- * @Date: 2026-08-11 08:32:57
- * @LastEditors: Frt001 2067314783@qq.com
- * @LastEditTime: 2026-09-10 15:45:15
- * @FilePath: \f4_show\Core\Src\main.c
- * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
- */
 /* USER CODE BEGIN Header */
 /**
   ******************************************************************************

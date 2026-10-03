@@ -61,6 +61,20 @@ const osThreadAttr_t BeepTask_attributes = {
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
+/* Definitions for ClawEcho_Task */
+osThreadId_t ClawEcho_TaskHandle;
+const osThreadAttr_t ClawEcho_Task_attributes = {
+  .name = "ClawEcho_Task",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal7,
+};
+/* Definitions for ClawUpdate_Task */
+osThreadId_t ClawUpdate_TaskHandle;
+const osThreadAttr_t ClawUpdate_Task_attributes = {
+  .name = "ClawUpdate_Task",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityHigh,
+};
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -69,6 +83,8 @@ const osThreadAttr_t BeepTask_attributes = {
 
 void LedWaterTask(void *argument);
 void BeepAlarmTask(void *argument);
+void Claw_Echo_Func(void *argument);
+void Claw_Update_Func(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -104,6 +120,12 @@ void MX_FREERTOS_Init(void) {
 
   /* creation of BeepTask */
   BeepTaskHandle = osThreadNew(BeepAlarmTask, NULL, &BeepTask_attributes);
+
+  /* creation of ClawEcho_Task */
+  ClawEcho_TaskHandle = osThreadNew(Claw_Echo_Func, NULL, &ClawEcho_Task_attributes);
+
+  /* creation of ClawUpdate_Task */
+  ClawUpdate_TaskHandle = osThreadNew(Claw_Update_Func, NULL, &ClawUpdate_Task_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -149,6 +171,42 @@ __weak void BeepAlarmTask(void *argument)
     osDelay(1);
   }
   /* USER CODE END BeepAlarmTask */
+}
+
+/* USER CODE BEGIN Header_Claw_Echo_Func */
+/**
+* @brief Function implementing the ClawEcho_Task thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_Claw_Echo_Func */
+__weak void Claw_Echo_Func(void *argument)
+{
+  /* USER CODE BEGIN Claw_Echo_Func */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END Claw_Echo_Func */
+}
+
+/* USER CODE BEGIN Header_Claw_Update_Func */
+/**
+* @brief Function implementing the ClawUpdate_Task thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_Claw_Update_Func */
+__weak void Claw_Update_Func(void *argument)
+{
+  /* USER CODE BEGIN Claw_Update_Func */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END Claw_Update_Func */
 }
 
 /* Private application code --------------------------------------------------*/
