@@ -18,11 +18,16 @@ extern "C"
         SM_EVENT_NONE = 0, // 无事件
         SM_EVENT_ENTRY, // 进入状态事件
         SM_EVENT_EXIT, // 退出状态事件
-        SM_EVENT_REMOTE, // IDLE事件
+        SM_EVENT_IDLE, // IDLE事件
+        
         SM_EVENT_GETSKY, //去传递区天空块事件
         SM_EVENT_PUTSKY, //建塔放天空块事件
         SM_EVENT_SPINSKY, //翻转对方的天空块事件
 
+        SM_EVENT_MOTIVATE,
+        SM_EVENT_NOTMOTIVATE,
+        SM_EVENT_ZERO,
+        SM_EVENT_RESET
     } SM_EventType;
 
     typedef struct SM_State SM_State;

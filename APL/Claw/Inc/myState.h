@@ -3,16 +3,69 @@
 
 #include "StateMachine.h"
 #include "Claw.h"
-
-/* --- 轨迹控制常量 --- */
+#include "djmotor.h"
+#include "zdrive.h"
 
 /* ------------------------ */
+#define TRANSITION_NUM 2
+#define MAX_TRANSITION_NUM 4
+#define PA_MM_PER_REV 125.66f /* 电机输出轴转 1 圈 = 125.66mm      */
+#define REF_MM 575.0f         /* 上电压缩起点的参考高度(mm) */
 
+typedef struct
+{
+    float Current_Height;
+    float Current_Pos;
+    float Target_deg;
+    float Degree_Per_Unit;
+} MotorDeg;
 
+typedef struct
+{
+    float GetSky;
+    float PutSky;
+    float SpinSky;
+} SmallArmPos;
+
+typedef struct
+{
+    float GetSky;
+    float PutSky;
+    float SpinSky;
+    float OutMachine;
+    float InMachine;
+
+} BigArmPos;
+
+typedef struct
+{
+    float GetSky;
+    float PutSky;
+    float SpinSky;
+    float SpinSkyUp;
+
+} LiftHeight;
+
+typedef struct
+{
+    float GetSky;
+    float PutSky;
+    float SpinSky;
+    float SpinSkyEnd;
+
+} RotationPos;
 
 /* --- 全局变量 extern 声明 --- */
 extern SM_StateMachine Claw_SM;
 extern SM_Event ClawEvent;
+extern volatile SmallArmPos small_arm_pos;
+extern volatile BigArmPos big_arm_pos;
+extern volatile LiftHeight lift_height;
+extern volatile RotationPos rotation_pos;
+extern volatile MotorDeg motor_deg[4];
+extern volatile uint8_t getsky_phase;
+extern volatile uint8_t putsky_phase;
+extern volatile uint8_t spinsky_phase;
 
 /* --- 状态对象 extern 声明 --- */
 extern SM_State IdleState;
@@ -24,14 +77,15 @@ extern SM_State SpinSkyState;
 SM_State *State_GetSky(SM_StateMachine *stateMachine, const SM_Event *event);
 SM_State *State_PutSky(SM_StateMachine *stateMachine, const SM_Event *event);
 SM_State *State_SpinSky(SM_StateMachine *stateMachine, const SM_Event *event);
+SM_State *State_Motivate(SM_StateMachine *stateMachine, const SM_Event *event);
+SM_State *State_NotMotivate(SM_StateMachine *stateMachine, const SM_Event *event);
+SM_State *State_Zero(SM_StateMachine *stateMachine, const SM_Event *event);
+SM_State *State_Reset(SM_StateMachine *stateMachine, const SM_Event *event);
 SM_State *State_IDLE(SM_StateMachine *stateMachine, const SM_Event *event);
-
-/* --- 共享辅助函数声明 --- */
-
 
 /* --- API 函数 --- */
 void MySM_Init(void);
-void StateEvent_Update(void);
+// void StateEvent_Update(void);
 void ClawEventEcho(void);
 
 #endif /* __MYSTATE_H__ */

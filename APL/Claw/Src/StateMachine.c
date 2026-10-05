@@ -1,7 +1,10 @@
 #include "StateMachine.h"
+#include "main.h"
 #include <string.h>
 #include <stdio.h>
-#include "stm32f4xx.h"
+
+
+#define MAX_DEPTH 3
 
 /*初始化状态机*/
 int SM_Init(SM_StateMachine *stateMachine, SM_State *initialState)
@@ -29,25 +32,20 @@ int SM_Init(SM_StateMachine *stateMachine, SM_State *initialState)
 /*处理事件*/
 int SM_ProcessEvent(SM_StateMachine *stateMachine, const SM_Event *event)
 {
-    if (stateMachine == NULL || !stateMachine->isInitialized)
+    if (stateMachine == NULL || !stateMachine->isInitialized ||
+        stateMachine->currentState == NULL || stateMachine->currentState->handler == NULL)
     {
         return -1;
     }
 
+    SM_Event noneEvent;
     if (event == NULL)
     {
-        SM_Event noneEvent = SM_CreateEvent(SM_EVENT_NONE /*, NULL, 0*/);
+        noneEvent = SM_CreateEvent(SM_EVENT_NONE);
         event = &noneEvent;
     }
 
-    // 调用当前状态的处理函数
-    SM_State *nextState = NULL;
-    if (stateMachine->currentState != NULL && stateMachine->currentState->handler != NULL)
-    {
-        nextState = stateMachine->currentState->handler(stateMachine, event);
-    }
-
-    // 如果处理函数返回了新状态，则进行状态转换
+    SM_State *nextState = stateMachine->currentState->handler(stateMachine, event);
     if (nextState != NULL && nextState != stateMachine->currentState)
     {
         return SM_TransitionTo(stateMachine, nextState);
@@ -59,39 +57,49 @@ int SM_ProcessEvent(SM_StateMachine *stateMachine, const SM_Event *event)
 /*切换状态*/
 int SM_TransitionTo(SM_StateMachine *stateMachine, SM_State *newState)
 {
-    if (stateMachine == NULL || newState == NULL)
+    if (stateMachine == NULL || newState == NULL || newState->handler == NULL)
     {
         return -1;
     }
     SM_State *oldState = stateMachine->currentState;
 
-    // 退出当前状态及其所有祖先状态
-    SM_Event exitEvent = SM_CreateEvent(SM_EVENT_EXIT /*, NULL, 0*/);
-    SM_State *temp = oldState;
+    // 在退出旧状态前检查目标层级，防止祖先数组越界。
+    SM_State *ancestors[MAX_DEPTH];
+    int depth = 0;
+    SM_State *temp = newState;
     while (temp != NULL)
     {
-        temp->handler(stateMachine, &exitEvent);
+        if (depth >= MAX_DEPTH || temp->handler == NULL)
+        {
+            return -1;
+        }
+        ancestors[depth++] = temp;
+        temp = temp->parentState;
+    }
+
+    // 退出当前状态及其所有祖先状态
+    SM_Event exitEvent = SM_CreateEvent(SM_EVENT_EXIT /*, NULL, 0*/);
+    temp = oldState;
+    while (temp != NULL)
+    {
+        if (temp->handler != NULL)
+        {
+            temp->handler(stateMachine, &exitEvent);
+        }
         temp = temp->parentState;
     }
 
     // 进入新状态及其所有祖先状态
     SM_Event entryEvent = SM_CreateEvent(SM_EVENT_ENTRY /*, NULL, 0*/);
-    newState->handler(stateMachine, &entryEvent);
-    // 需要先收集新状态的所有祖先状态,然后从顶层开始进入
-    //    SM_State *ancestors[MAX_DEPTH];
-    //    int depth = 0;
-    //    temp = newState;
-    //    while (temp != NULL) {
-    //        ancestors[depth++] = temp;
-    //        temp = temp->parentState;
-    //    }
-    //    // 从顶层祖先开始进入
-    //    for (int i = depth - 1; i >= 0; i--) {
-    //        if (ancestors[i]->handler != NULL) {
-    //            ancestors[i]->handler(stateMachine, &entryEvent);
-    //        }
-    //    }
-    stateMachine->previousState = stateMachine->currentState;
+    // 从顶层祖先开始进入
+    for (int i = depth - 1; i >= 0; i--)
+    {
+        if (ancestors[i]->handler != NULL)
+        {
+            ancestors[i]->handler(stateMachine, &entryEvent);
+        }
+    }
+    stateMachine->previousState = oldState;
     stateMachine->currentState = newState;
     stateMachine->lastStateChangeTime = HAL_GetTick();
 
@@ -109,26 +117,15 @@ int SM_Reset(SM_StateMachine *stateMachine)
     return SM_TransitionTo(stateMachine, stateMachine->initialState);
 }
 
-/*检查状态机是否已经初始化*/
-bool SM_IsInitialized(const SM_StateMachine *stateMachine)
+/*获取当前状态*/
+SM_State *SM_GetCurrentState(const SM_StateMachine *stateMachine)
 {
     if (stateMachine == NULL)
     {
-        return false;
+        return NULL;
     }
 
-    return stateMachine->isInitialized;
-}
-
-/*获取当前状态*/
-int SM_Reset(SM_StateMachine *stateMachine)
-{
-    if (stateMachine == NULL || stateMachine->initialState == NULL)
-    {
-        return -1;
-    }
-
-    return SM_TransitionTo(stateMachine, stateMachine->initialState);
+    return stateMachine->currentState;
 }
 
 /*获取前一状态*/
@@ -167,8 +164,6 @@ bool SM_IsInState(const SM_StateMachine *stateMachine, const SM_State *state)
     return false;
 }
 
-
-
 /*添加状态转换*/
 int SM_AddTransition(SM_Transition *transitions, int maxTransitions, SM_State *fromState,
                      SM_EventType eventType, SM_State *toState,
@@ -179,48 +174,57 @@ int SM_AddTransition(SM_Transition *transitions, int maxTransitions, SM_State *f
     {
         return -1;
     }
-
-    // 查找第一个未使用的转换槽
-    int i;
-    for (i = 0; i < maxTransitions; i++)
+    for (int i = 0; i < maxTransitions; i++)
     {
         if (transitions[i].fromState == NULL)
         {
-            break;
+            transitions[i].fromState = fromState;
+            transitions[i].eventType = eventType;
+            transitions[i].toState = toState;
+            transitions[i].guard = guard;
+            transitions[i].action = action;
+            return 0;
         }
     }
-
-    // 如果没有找到空闲槽，返回错误
-    if (i >= maxTransitions)
-    {
-        return -2;
-    }
-
-    // 填充转换信息
-    transitions[i].fromState = fromState;
-    transitions[i].eventType = eventType;
-    transitions[i].toState = toState;
-    transitions[i].guard = guard;
-    transitions[i].action = action;
-
-    return 0;
+    return -2;
 }
 
 /*处理状态转换*/
 int SM_ProcessTransitions(SM_StateMachine *stateMachine, const SM_Transition *transitions,
                           int numTransitions, const SM_Event *event)
 {
-    if (stateMachine == NULL || transitions == NULL || numTransitions <= 0)
+    if (stateMachine == NULL || !stateMachine->isInitialized || transitions == NULL || numTransitions <= 0)
     {
         return -1;
     }
 
+    SM_Event noneEvent;
     if (event == NULL)
     {
-        SM_Event noneEvent = SM_CreateEvent(SM_EVENT_NONE /*, NULL, 0*/);
+        noneEvent = SM_CreateEvent(SM_EVENT_NONE);
         event = &noneEvent;
     }
+
+    for (int i = 0; i < numTransitions; i++)
+    {
+        if (transitions[i].fromState != NULL &&
+            transitions[i].fromState == stateMachine->currentState &&
+            transitions[i].eventType == event->type)
+        {
+            if (transitions[i].guard != NULL && !transitions[i].guard(stateMachine, event))
+            {
+                continue;
+            }
+            if (transitions[i].action != NULL)
+            {
+                transitions[i].action(stateMachine, event);
+            }
+            return SM_TransitionTo(stateMachine, transitions[i].toState);
+        }
+    }
+    return SM_ProcessEvent(stateMachine, event);
 }
+
 /*创建事件*/
 SM_Event SM_CreateEvent(SM_EventType eventType /*, void *data, uint16_t dataSize*/)
 {
@@ -231,3 +235,13 @@ SM_Event SM_CreateEvent(SM_EventType eventType /*, void *data, uint16_t dataSize
     return event;
 }
 
+/*检查状态机是否已经初始化*/
+bool SM_IsInitialized(const SM_StateMachine *stateMachine)
+{
+    if (stateMachine == NULL)
+    {
+        return false;
+    }
+
+    return stateMachine->isInitialized;
+}

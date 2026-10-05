@@ -1,4 +1,5 @@
 #include "myostasks.h"
+#include "myState.h"
 
 uint8_t BeepAlarmTimes = 0;
 
@@ -30,6 +31,7 @@ void BeepAlarmTask(void *argument)
 
 void Claw_Echo_Func(void *argument)
 {
+  MySM_Init();
   for (;;)
   {
     ClawEventEcho();
@@ -38,11 +40,11 @@ void Claw_Echo_Func(void *argument)
   }
 }
 
-void Claw_Update_Func(void *argument)
-{
-  for (;;)
-  {
-    StateEvent_Update();
-    osDelay(30);
-  }
-}
+// void Claw_Update_Func(void *argument)
+// {
+//   for (;;)
+//   {
+//     StateEvent_Update();
+//     osDelay(30);
+//   }
+// }
