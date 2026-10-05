@@ -3,69 +3,37 @@
 #include "solenoid.h"
 
 /*爪子任务静态变量*/
-volatile MotorDeg motor_deg[4] =
+volatile SmallArmPos small_arm_pos =
     {
-        {0.0f, 0.0f, 0.0f, -1.0f},
-        {0.0f, 0.0f, 0.0f, -1.0f},
-        {0.0f, 0.0f, 0.0f, -1.0f},
-        {0.0f, 0.0f, 0.0f, -1.0f}};
+        .GetSky = 0.0f,
+        .PutSky = 0.0f,
+        .SpinSky = 0.0f};
 
-static void Change_HP_to_Degree(const void *Motor, float Target_HP)
-{
-    static float Reference_HP[4];
-    static float Reference_Degree[4];
-    static bool Initialized[4];
-    uint8_t Motor_Index;
-    float Current_deg;
-    volatile float *Target_Degree;
+volatile BigArmPos big_arm_pos =
+    {
+        .GetSky = 0.0f,
+        .PutSky = 0.0f,
+        .SpinSky = 0.0f,
+        .OutMachine = 0.0f,
+        .InMachine = 0.0f};
 
-    if (Motor == Claw.small_arm_motor)
+volatile LiftHeight lift_height =
     {
-        Motor_Index = 0;
-        Current_deg = Claw.small_arm_motor->valNow.angle_deg;
-        Target_Degree = &Claw.small_arm_motor->valSet.angle_deg;
-    }
-    else if (Motor == Claw.big_arm_motor)
-    {
-        Motor_Index = 1;
-        Current_deg = Claw.big_arm_motor->valNow.angle_deg;
-        Target_Degree = &Claw.big_arm_motor->valSet.angle_deg;
-    }
-    else if (Motor == Claw.lift_motor)
-    {
-        Motor_Index = 2;
-        Current_deg = Claw.lift_motor->valNow.angle_deg;
-        Target_Degree = &Claw.lift_motor->valSet.angle_deg;
-    }
-    else if (Motor == Claw.rotation_motor)
-    {
-        Motor_Index = 3;
-        Current_deg = Claw.rotation_motor->valReal.pos_deg;
-        Target_Degree = &Claw.rotation_motor->valSetNow.pos_deg;
-    }
-    else
-    {
-        return;
-    }
+        .GetSky = 0.0f,
+        .PutSky = 0.0f,
+        .SpinSky = 0.0f,
+        .SpinSkyUp = 0.0f};
 
-    float Degree_Per_Unit = motor_deg[Motor_Index].Degree_Per_Unit;
-    if (Degree_Per_Unit == 0.0f)
+volatile RotationPos rotation_pos =
     {
-        return;
-    }
+        .GetSky = 0.0f,
+        .PutSky = 0.0f,
+        .SpinSky = 0.0f,
+        .SpinSkyEnd = 0.0f};
 
-    volatile float *Current_HP = Motor_Index == 2 ? &motor_deg[Motor_Index].Current_Height : &motor_deg[Motor_Index].Current_Pos;
-    if (!Initialized[Motor_Index])
-    {
-        Reference_HP[Motor_Index] = *Current_HP;
-        Reference_Degree[Motor_Index] = Current_deg;
-        Initialized[Motor_Index] = true;
-    }
-
-    motor_deg[Motor_Index].Target_deg = Reference_Degree[Motor_Index] + (Target_HP - Reference_HP[Motor_Index]) * Degree_Per_Unit;
-    *Target_Degree = motor_deg[Motor_Index].Target_deg;
-    *Current_HP = Reference_HP[Motor_Index] + (Current_deg - Reference_Degree[Motor_Index]) / Degree_Per_Unit;
-}
+volatile uint8_t getsky_phase = 0;
+volatile uint8_t putsky_phase = 0;
+volatile uint8_t spinsky_phase = 0;
 
 /*取传递区天空块*/
 SM_State *State_GetSky(SM_StateMachine *stateMachine, const SM_Event *event)
@@ -223,58 +191,66 @@ SM_State *State_SpinSky(SM_StateMachine *stateMachine, const SM_Event *event)
 
 SM_State *State_Motivate(SM_StateMachine *stateMachine, const SM_Event *event)
 {
-    if (event->type != SM_EVENT_ENTRY)
+    switch (event->type)
     {
-        if (event->type == SM_EVENT_EXIT)
-        {
-            return NULL;
-        }
+    case SM_EVENT_ENTRY:
+        ClawEvent.type = SM_EVENT_MOTIVATE;
+        Claw.small_arm_motor->Begin = true;
+        Claw.big_arm_motor->Begin = true;
+        Claw.lift_motor->Begin = true;
+        Claw.rotation_motor->Begin = true;
+
+        Claw.small_arm_motor->MODE_Set = DJ_Position;
+        Claw.big_arm_motor->MODE_Set = DJ_Position;
+        Claw.lift_motor->MODE_Set = DJ_Position;
+        Claw.rotation_motor->mode = Zdrive_Postion;
+        break;
+    case SM_EVENT_EXIT:
+        ClawEvent.type = SM_EVENT_IDLE;
+        break;
+    case SM_EVENT_MOTIVATE:
+        break;
+    default:
         return State_IDLE(stateMachine, event);
     }
-
-    Claw.small_arm_motor->Begin = true;
-    Claw.big_arm_motor->Begin = true;
-    Claw.lift_motor->Begin = true;
-    Claw.rotation_motor->Begin = true;
-
-    Claw.small_arm_motor->MODE_Set = DJ_Position;
-    Claw.big_arm_motor->MODE_Set = DJ_Position;
-    Claw.lift_motor->MODE_Set = DJ_Position;
-    Claw.rotation_motor->mode = Zdrive_Postion;
-    ClawEvent.type = SM_EVENT_IDLE;
-
     return NULL;
 }
 
 SM_State *State_NotMotivate(SM_StateMachine *stateMachine, const SM_Event *event)
 {
-    if (event->type != SM_EVENT_ENTRY)
+    switch (event->type)
     {
-        if (event->type == SM_EVENT_EXIT)
-        {
-            return NULL;
-        }
+    case SM_EVENT_ENTRY:
+        ClawEvent.type = SM_EVENT_NOTMOTIVATE;
+        Claw.small_arm_motor->Begin = false;
+        Claw.big_arm_motor->Begin = false;
+        Claw.lift_motor->Begin = false;
+        Claw.rotation_motor->Begin = false;
+        break;
+    case SM_EVENT_EXIT:
+        ClawEvent.type = SM_EVENT_IDLE;
+        break;
+    case SM_EVENT_NOTMOTIVATE:
+        break;
+    default:
         return State_IDLE(stateMachine, event);
     }
-
-    Claw.small_arm_motor->Begin = false;
-    Claw.big_arm_motor->Begin = false;
-    Claw.lift_motor->Begin = false;
-    Claw.rotation_motor->Begin = false;
-    ClawEvent.type = SM_EVENT_IDLE;
-
     return NULL;
 }
 
 SM_State *State_Zero(SM_StateMachine *stateMachine, const SM_Event *event)
 {
-    if (event->type == SM_EVENT_ENTRY)
+    switch (event->type)
     {
-        // 机械寻零方向和限位尚未标定，保留原来的空实现。
+    case SM_EVENT_ENTRY:
+        ClawEvent.type = SM_EVENT_ZERO;
+        break;
+    case SM_EVENT_EXIT:
         ClawEvent.type = SM_EVENT_IDLE;
-    }
-    else if (event->type != SM_EVENT_EXIT)
-    {
+        break;
+    case SM_EVENT_ZERO:
+        break;
+    default:
         return State_IDLE(stateMachine, event);
     }
     return NULL;
@@ -282,13 +258,19 @@ SM_State *State_Zero(SM_StateMachine *stateMachine, const SM_Event *event)
 
 SM_State *State_Reset(SM_StateMachine *stateMachine, const SM_Event *event)
 {
-    if (event->type == SM_EVENT_ENTRY)
+    switch (event->type)
     {
+    case SM_EVENT_ENTRY:
+        ClawEvent.type = SM_EVENT_RESET;
         __set_FAULTMASK(1);
         NVIC_SystemReset();
-    }
-    else if (event->type != SM_EVENT_EXIT)
-    {
+        break;
+    case SM_EVENT_EXIT:
+        ClawEvent.type = SM_EVENT_IDLE;
+        break;
+    case SM_EVENT_RESET:
+        break;
+    default:
         return State_IDLE(stateMachine, event);
     }
     return NULL;

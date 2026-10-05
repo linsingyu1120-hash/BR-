@@ -3,14 +3,6 @@
 SM_StateMachine Claw_SM; // 爪子状态机
 SM_Event ClawEvent;      // 爪子触发事件
 
-volatile SmallArmPos small_arm_pos = {0};
-volatile BigArmPos big_arm_pos = {0};
-volatile LiftHeight lift_height = {0};
-volatile RotationPos rotation_pos = {0};
-volatile uint8_t getsky_phase = 0;
-volatile uint8_t putsky_phase = 0;
-volatile uint8_t spinsky_phase = 0;
-
 SM_Transition SMTranList[MAX_TRANSITION_NUM] = {0}; // 状态转移情况列表
 
 SM_State IdleState = {State_IDLE, NULL, NULL}; // 父状态，遥控事件放在父状态
@@ -69,21 +61,21 @@ SM_State *State_IDLE(SM_StateMachine *stateMachine, const SM_Event *event)
         SM_TransitionTo(stateMachine, &SpinSkyState);
         break;
 
-    case SM_EVENT_MOTIVATE:    
-    SM_TransitionTo(stateMachine, &MotivateState);
-    break;
+    case SM_EVENT_MOTIVATE:
+        SM_TransitionTo(stateMachine, &MotivateState);
+        break;
 
     case SM_EVENT_NOTMOTIVATE:
-    SM_TransitionTo(stateMachine, &NotMotivateState);
-    break;
+        SM_TransitionTo(stateMachine, &NotMotivateState);
+        break;
 
     case SM_EVENT_ZERO:
-    SM_TransitionTo(stateMachine, &ZeroState);
-    break;
+        SM_TransitionTo(stateMachine, &ZeroState);
+        break;
 
     case SM_EVENT_RESET:
-    SM_TransitionTo(stateMachine, &ResetState);
-    break;
+        SM_TransitionTo(stateMachine, &ResetState);
+        break;
 
     default:
         ClawEvent.type = SM_EVENT_IDLE;

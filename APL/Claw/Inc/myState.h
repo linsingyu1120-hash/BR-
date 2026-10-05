@@ -9,20 +9,12 @@
 /* ------------------------ */
 #define TRANSITION_NUM 2
 #define MAX_TRANSITION_NUM 4
-#define PA_MM_PER_REV 125.66f /* 电机输出轴转 1 圈 = 125.66mm      */
-#define REF_MM 575.0f         /* 上电压缩起点的参考高度(mm) */
+
+
 
 typedef struct
 {
-    float Current_Height;
-    float Current_Pos;
-    float Target_deg;
-    float Degree_Per_Unit;
-} MotorDeg;
-
-typedef struct
-{
-    float GetSky;
+    float GetSky; //
     float PutSky;
     float SpinSky;
 } SmallArmPos;

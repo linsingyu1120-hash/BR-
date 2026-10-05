@@ -14,7 +14,16 @@ typedef struct
     Zdrive *rotation_motor;         // 旋转电机，使用现有 ZDrive 接口
 } Claw_struct;
 
+typedef struct
+{
+    float Current_Height;  // 当前高度（仅升降机构使用）
+    float Current_Pos;     // 当前转角（仅升降机构不使用）
+    float Target_deg;      // 目标角度（输出到DJ/zdrive模板中的valSet角度）
+    float Degree_Per_Unit; // 每升高1mm/转1°电机所需转动的角度（规定逆时针为正方向）
+} MotorDeg;
+
 extern Claw_struct Claw;
 void Claw_Init(void);
+void Change_HP_to_Degree(const void *Motor, float Target_HP);
 
 #endif /* __CLAW_H__ */
