@@ -19,7 +19,6 @@ SM_State ResetState = {State_Reset, &IdleState, NULL};
 void MySM_Init(void)
 {
     SM_Init(&Claw_SM, &IdleState);
-    Claw_Init();
 }
 
 // void StateEventUpdate()

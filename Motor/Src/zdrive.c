@@ -98,7 +98,7 @@ void ZdriveInit(void)
     for (uint32_t i = 0; i < USE_ZDRIVE_NUM; i++)
     {
         Zmotor[i].param.GearRatio = 1.0f;
-        Zmotor[i].param.ReductionRatio = 1.0f;
+        Zmotor[i].param.ReductionRatio = 7.75f;
         Zmotor[i].param.zdrive_id = (uint8_t)(i + 1U);
         Zmotor[i].valSetPre.pos_deg = 0.f;
         Zmotor[i].valSetNow.speed_rpm = 0.0f;
@@ -121,6 +121,7 @@ void ZdriveInit(void)
     ZdriveAsk(0xFU, Pos_PID_D);
     ZdriveAsk(0xFU, Vel_PID_P);
     ZdriveAsk(0xFU, Vel_PID_I);
+    ZdriveSet(0.0f,0xFU,Pur);
 }
 
 /* 统一 set:按 set_code 完成单位换算、帧编码、读回确认后再入队。
@@ -136,7 +137,7 @@ void ZdriveSet(float data, uint8_t id, uint8_t set_code)
     {
         id = 0xFU; /* broadcast address */
     }
-    else if (id > USE_ZDRIVE_NUM)
+    else if (id > USE_ZDRIVE_NUM &&id!=0xFU)
     {
         return;
     }

@@ -32,6 +32,7 @@ void BeepAlarmTask(void *argument)
 void Claw_Echo_Func(void *argument)
 {
   MySM_Init();
+  Claw_Init();
   for (;;)
   {
     ClawEventEcho();

@@ -11,10 +11,10 @@ volatile SmallArmPos small_arm_pos =
 
 volatile BigArmPos big_arm_pos =
     {
-        .GetSky = 0.0f,
+        .GetSky = 10.0f,
         .PutSky = 0.0f,
         .SpinSky = 0.0f,
-        .OutMachine = 0.0f,
+        .OutMachine = 10.0f,
         .InMachine = 0.0f};
 
 volatile LiftHeight lift_height =
@@ -26,7 +26,7 @@ volatile LiftHeight lift_height =
 
 volatile RotationPos rotation_pos =
     {
-        .GetSky = 0.0f,
+        .GetSky = 10.0f,
         .PutSky = 0.0f,
         .SpinSky = 0.0f,
         .SpinSkyEnd = 0.0f};

@@ -4,27 +4,17 @@ Claw_struct Claw;
 
 volatile MotorDeg motor_deg[4] =
     {
-        {0.0f, 0.0f, 0.0f, -1.0f},  // small_arm_motor: Current_Height, Current_Pos, Target_deg, Degree_Per_Unit
-        {0.0f, 0.0f, 0.0f, -1.0f},  // big_arm_motor: Current_Height, Current_Pos, Target_deg, Degree_Per_Unit
-        {0.0f, 0.0f, 0.0f, -1.0f},  // lift_motor: Current_Height, Current_Pos, Target_deg, Degree_Per_Unit
-        {0.0f, 0.0f, 0.0f, -1.0f}}; // rotation_motor: Current_Height, Current_Pos, Target_deg, Degree_Per_Unit
+        {0.0f, 0.0f, 0.0f, 2.0f},  // small_arm_motor: Current_Height, Current_Pos, Target_deg, Degree_Per_Unit
+        {0.0f, 0.0f, 0.0f, 1.363636364f},  // big_arm_motor: Current_Height, Current_Pos, Target_deg, Degree_Per_Unit
+        {0.0f, 0.0f, 0.0f, 3.157894737f},  // lift_motor: Current_Height, Current_Pos, Target_deg, Degree_Per_Unit
+        {0.0f, 0.0f, 0.0f, 1.68f}}; // rotation_motor: Current_Height, Current_Pos, Target_deg, Degree_Per_Unit
 
 void Claw_Init(void)
 {
-    Claw.small_arm_motor = &DJmotor[0];
-    Claw.big_arm_motor = &DJmotor[1];
-    Claw.lift_motor = &DJmotor[2];
-    Claw.rotation_motor = &Zmotor[3];
-
-    Claw.small_arm_motor->Begin = true;
-    Claw.big_arm_motor->Begin = true;
-    Claw.lift_motor->Begin = true;
-    Claw.rotation_motor->Begin = true;
-
-    Claw.small_arm_motor->MODE_Set = DJ_Position;
-    Claw.big_arm_motor->MODE_Set = DJ_Position;
-    Claw.lift_motor->MODE_Set = DJ_Position;
-    Claw.rotation_motor->mode = Zdrive_Postion; 
+    Claw.small_arm_motor = &DJmotor[3];
+    Claw.big_arm_motor = &DJmotor[2];
+    Claw.lift_motor = &DJmotor[0];
+    Claw.rotation_motor = &Zmotor[0];
 }
 
 void Change_HP_to_Degree(const void *Motor, float Target_HP) // 选择的电机型号；目标位置->对于升降机构来说是目标高度，对于其他机构来说是目标转角
