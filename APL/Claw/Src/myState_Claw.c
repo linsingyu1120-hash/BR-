@@ -3,33 +3,29 @@
 #include "solenoid.h"
 
 /*爪子任务静态变量*/
+volatile BigArmPos big_arm_pos =
+    {
+        .GetSky = 190.0f,
+        .PutSky = 170.0f,
+        .OutMachine = 180.0f,
+        .InMachine = 0.0f};
+
 volatile SmallArmPos small_arm_pos =
+    {
+        .GetSky = -10.0f,
+        .PutSky = 10.0f};
+
+volatile RotationPos rotation_pos =
     {
         .GetSky = 0.0f,
         .PutSky = 0.0f,
-        .SpinSky = 0.0f};
-
-volatile BigArmPos big_arm_pos =
-    {
-        .GetSky = 10.0f,
-        .PutSky = 0.0f,
-        .SpinSky = 0.0f,
-        .OutMachine = 10.0f,
-        .InMachine = 0.0f};
+        .SpinSky = 180.0f};
 
 volatile LiftHeight lift_height =
     {
         .GetSky = 0.0f,
-        .PutSky = 0.0f,
-        .SpinSky = 0.0f,
-        .SpinSkyUp = 0.0f};
-
-volatile RotationPos rotation_pos =
-    {
-        .GetSky = 10.0f,
-        .PutSky = 0.0f,
-        .SpinSky = 0.0f,
-        .SpinSkyEnd = 0.0f};
+        .PutSky = 700.0f,
+        .SpinSkyUp = 720.0f};
 
 volatile uint8_t getsky_phase = 0;
 volatile uint8_t putsky_phase = 0;
@@ -54,12 +50,11 @@ SM_State *State_GetSky(SM_StateMachine *stateMachine, const SM_Event *event)
             Change_HP_to_Degree(Claw.lift_motor, lift_height.GetSky);
             break;
 
-        case 2: // 爪子翻转，小臂/手腕调整角度，开爪
-            Change_HP_to_Degree(Claw.big_arm_motor, big_arm_pos.OutMachine);
+        case 2: // 爪子翻转，大臂/小臂调整角度，开爪
+            solenoid_on(CLAW_SOLENOID_CHANNEL, 1);
+            Change_HP_to_Degree(Claw.big_arm_motor, big_arm_pos.GetSky);
             osDelay(100);
             Change_HP_to_Degree(Claw.small_arm_motor, small_arm_pos.GetSky);
-            Change_HP_to_Degree(Claw.rotation_motor, rotation_pos.GetSky);
-            solenoid_on(CLAW_SOLENOID_CHANNEL, 1);
             break;
 
         case 3: // 关爪夹取天空块
@@ -100,18 +95,16 @@ SM_State *State_PutSky(SM_StateMachine *stateMachine, const SM_Event *event)
         case 1: // 关爪夹取体内天空块，爪子翻转出体外
             solenoid_on(CLAW_SOLENOID_CHANNEL, 0);
             osDelay(100);
-            Change_HP_to_Degree(Claw.big_arm_motor, big_arm_pos.OutMachine);
+            Change_HP_to_Degree(Claw.big_arm_motor, big_arm_pos.PutSky);
             break;
 
         case 2: // 爪子上升到指定高度
             Change_HP_to_Degree(Claw.lift_motor, lift_height.PutSky);
             break;
 
-        case 3: // 大臂/小臂/手腕调整角度，开爪
+        case 3: // 小臂调整角度，开爪
             solenoid_on(CLAW_SOLENOID_CHANNEL, 1);
-            Change_HP_to_Degree(Claw.big_arm_motor, big_arm_pos.PutSky);
             Change_HP_to_Degree(Claw.small_arm_motor, small_arm_pos.PutSky);
-            Change_HP_to_Degree(Claw.rotation_motor, rotation_pos.PutSky);
             break;
 
         case 4: // 爪子下降到指定高度，翻转进体内
@@ -147,16 +140,14 @@ SM_State *State_SpinSky(SM_StateMachine *stateMachine, const SM_Event *event)
         switch (spinsky_phase)
         {
         case 1: // 爪子翻转出体外
-            Change_HP_to_Degree(Claw.big_arm_motor, big_arm_pos.OutMachine);
+            Change_HP_to_Degree(Claw.big_arm_motor, big_arm_pos.PutSky);
             break;
         case 2: // 爪子上升到指定高度
-            Change_HP_to_Degree(Claw.lift_motor, lift_height.SpinSky);
+            Change_HP_to_Degree(Claw.lift_motor, lift_height.PutSky);
             break;
         case 3: // 根据对方天空块的摆放情况，调整大臂/小臂/手腕角度
             solenoid_on(CLAW_SOLENOID_CHANNEL, 1);
-            Change_HP_to_Degree(Claw.big_arm_motor, big_arm_pos.SpinSky);
-            Change_HP_to_Degree(Claw.small_arm_motor, small_arm_pos.SpinSky);
-            Change_HP_to_Degree(Claw.rotation_motor, rotation_pos.SpinSky);
+            Change_HP_to_Degree(Claw.small_arm_motor, small_arm_pos.PutSky);
             break;
         case 4: // 关爪夹取天空块，爪子抬升一小段距离
             solenoid_on(CLAW_SOLENOID_CHANNEL, 0);
@@ -164,7 +155,7 @@ SM_State *State_SpinSky(SM_StateMachine *stateMachine, const SM_Event *event)
             Change_HP_to_Degree(Claw.lift_motor, lift_height.SpinSkyUp);
             break;
         case 5: // 爪子旋转
-            Change_HP_to_Degree(Claw.rotation_motor, rotation_pos.SpinSkyEnd);
+            Change_HP_to_Degree(Claw.rotation_motor, rotation_pos.SpinSky);
             break;
         case 6: // 开爪放天空块
             solenoid_on(CLAW_SOLENOID_CHANNEL, 1);
@@ -195,15 +186,15 @@ SM_State *State_Motivate(SM_StateMachine *stateMachine, const SM_Event *event)
     {
     case SM_EVENT_ENTRY:
         ClawEvent.type = SM_EVENT_MOTIVATE;
-        Claw.small_arm_motor->Begin = true;
         Claw.big_arm_motor->Begin = true;
-        Claw.lift_motor->Begin = true;
+        Claw.small_arm_motor->Begin = true;
         Claw.rotation_motor->Begin = true;
+        Claw.lift_motor->Begin = true;
 
+        Claw.big_arm_motor->mode = Zdrive_Postion;
         Claw.small_arm_motor->MODE_Set = DJ_Position;
-        Claw.big_arm_motor->MODE_Set = DJ_Position;
         Claw.lift_motor->MODE_Set = DJ_Position;
-        Claw.rotation_motor->mode = Zdrive_Postion;
+        Claw.rotation_motor->MODE_Set = DJ_Position;
         break;
     case SM_EVENT_EXIT:
         ClawEvent.type = SM_EVENT_IDLE;

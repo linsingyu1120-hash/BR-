@@ -10,13 +10,18 @@
 #define TRANSITION_NUM 2
 #define MAX_TRANSITION_NUM 4
 
-
+typedef struct
+{
+    float GetSky;
+    float PutSky;
+    float OutMachine;
+    float InMachine;
+} BigArmPos;
 
 typedef struct
 {
-    float GetSky; //
+    float GetSky;
     float PutSky;
-    float SpinSky;
 } SmallArmPos;
 
 typedef struct
@@ -24,36 +29,22 @@ typedef struct
     float GetSky;
     float PutSky;
     float SpinSky;
-    float OutMachine;
-    float InMachine;
-
-} BigArmPos;
-
-typedef struct
-{
-    float GetSky;
-    float PutSky;
-    float SpinSky;
-    float SpinSkyUp;
-
-} LiftHeight;
-
-typedef struct
-{
-    float GetSky;
-    float PutSky;
-    float SpinSky;
-    float SpinSkyEnd;
-
 } RotationPos;
+
+typedef struct
+{
+    float GetSky;
+    float PutSky;
+    float SpinSkyUp;
+} LiftHeight;
 
 /* --- 全局变量 extern 声明 --- */
 extern SM_StateMachine Claw_SM;
 extern SM_Event ClawEvent;
-extern volatile SmallArmPos small_arm_pos;
 extern volatile BigArmPos big_arm_pos;
-extern volatile LiftHeight lift_height;
+extern volatile SmallArmPos small_arm_pos;
 extern volatile RotationPos rotation_pos;
+extern volatile LiftHeight lift_height;
 extern volatile MotorDeg motor_deg[4];
 extern volatile uint8_t getsky_phase;
 extern volatile uint8_t putsky_phase;
