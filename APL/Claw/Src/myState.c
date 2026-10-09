@@ -35,6 +35,7 @@ void ClawEventEcho()
             // BEEP_Alarm(1); // 蜂鸣器报警
         }
     }
+    Claw_TrajectoryUpdate();
 }
 
 SM_State *State_IDLE(SM_StateMachine *stateMachine, const SM_Event *event)

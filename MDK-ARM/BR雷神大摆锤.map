@@ -2369,12 +2369,12 @@ Section Cross References
     claw.o(.text.Claw_Init) refers to zdrive.o(.bss.Zmotor) for Zmotor
     claw.o(.text.Claw_Init) refers to djmotor.o(.bss.DJmotor) for DJmotor
     claw.o(.ARM.exidx.text.Claw_Init) refers to claw.o(.text.Claw_Init) for [Anonymous Symbol]
-    claw.o(.text.Change_HP_to_Degree) refers to claw.o(.bss.Claw) for Claw
-    claw.o(.text.Change_HP_to_Degree) refers to claw.o(.data.motor_deg) for motor_deg
-    claw.o(.text.Change_HP_to_Degree) refers to claw.o(.bss.Change_HP_to_Degree.Initialized) for Change_HP_to_Degree.Initialized
-    claw.o(.text.Change_HP_to_Degree) refers to claw.o(.bss.Change_HP_to_Degree.Reference_HP) for Change_HP_to_Degree.Reference_HP
-    claw.o(.text.Change_HP_to_Degree) refers to claw.o(.bss.Change_HP_to_Degree.Reference_Degree) for Change_HP_to_Degree.Reference_Degree
-    claw.o(.ARM.exidx.text.Change_HP_to_Degree) refers to claw.o(.text.Change_HP_to_Degree) for [Anonymous Symbol]
+    claw.o(.text.Motor_Move) refers to claw.o(.bss.Claw) for Claw
+    claw.o(.text.Motor_Move) refers to claw.o(.data.motor_deg) for motor_deg
+    claw.o(.text.Motor_Move) refers to claw.o(.bss.Motor_Move.Initialized) for Motor_Move.Initialized
+    claw.o(.text.Motor_Move) refers to claw.o(.bss.Motor_Move.Reference_HP) for Motor_Move.Reference_HP
+    claw.o(.text.Motor_Move) refers to claw.o(.bss.Motor_Move.Reference_Degree) for Motor_Move.Reference_Degree
+    claw.o(.ARM.exidx.text.Motor_Move) refers to claw.o(.text.Motor_Move) for [Anonymous Symbol]
     mystate.o(.text.State_IDLE) refers to mystate.o(.bss.ClawEvent) for ClawEvent
     mystate.o(.text.State_IDLE) refers to mystate.o(.data.IdleState) for IdleState
     mystate.o(.text.State_IDLE) refers to mystate.o(.data.GetSkyState) for GetSkyState
@@ -2414,7 +2414,7 @@ Section Cross References
     mystate_claw.o(.text.State_GetSky) refers to mystate_claw.o(.bss.getsky_phase) for getsky_phase
     mystate_claw.o(.text.State_GetSky) refers to claw.o(.bss.Claw) for Claw
     mystate_claw.o(.text.State_GetSky) refers to mystate_claw.o(.bss.lift_height) for lift_height
-    mystate_claw.o(.text.State_GetSky) refers to claw.o(.text.Change_HP_to_Degree) for Change_HP_to_Degree
+    mystate_claw.o(.text.State_GetSky) refers to claw.o(.text.Motor_Move) for Motor_Move
     mystate_claw.o(.text.State_GetSky) refers to solenoid.o(.text.solenoid_on) for solenoid_on
     mystate_claw.o(.text.State_GetSky) refers to mystate_claw.o(.data.big_arm_pos) for big_arm_pos
     mystate_claw.o(.text.State_GetSky) refers to cmsis_os2.o(.text.osDelay) for osDelay
@@ -2427,7 +2427,7 @@ Section Cross References
     mystate_claw.o(.text.State_PutSky) refers to cmsis_os2.o(.text.osDelay) for osDelay
     mystate_claw.o(.text.State_PutSky) refers to claw.o(.bss.Claw) for Claw
     mystate_claw.o(.text.State_PutSky) refers to mystate_claw.o(.data.big_arm_pos) for big_arm_pos
-    mystate_claw.o(.text.State_PutSky) refers to claw.o(.text.Change_HP_to_Degree) for Change_HP_to_Degree
+    mystate_claw.o(.text.State_PutSky) refers to claw.o(.text.Motor_Move) for Motor_Move
     mystate_claw.o(.text.State_PutSky) refers to mystate_claw.o(.bss.lift_height) for lift_height
     mystate_claw.o(.text.State_PutSky) refers to mystate_claw.o(.data.small_arm_pos) for small_arm_pos
     mystate_claw.o(.text.State_PutSky) refers to mystate.o(.text.State_IDLE) for State_IDLE
@@ -2436,7 +2436,7 @@ Section Cross References
     mystate_claw.o(.text.State_SpinSky) refers to mystate_claw.o(.bss.spinsky_phase) for spinsky_phase
     mystate_claw.o(.text.State_SpinSky) refers to claw.o(.bss.Claw) for Claw
     mystate_claw.o(.text.State_SpinSky) refers to mystate_claw.o(.data.big_arm_pos) for big_arm_pos
-    mystate_claw.o(.text.State_SpinSky) refers to claw.o(.text.Change_HP_to_Degree) for Change_HP_to_Degree
+    mystate_claw.o(.text.State_SpinSky) refers to claw.o(.text.Motor_Move) for Motor_Move
     mystate_claw.o(.text.State_SpinSky) refers to mystate_claw.o(.bss.lift_height) for lift_height
     mystate_claw.o(.text.State_SpinSky) refers to solenoid.o(.text.solenoid_on) for solenoid_on
     mystate_claw.o(.text.State_SpinSky) refers to mystate_claw.o(.data.small_arm_pos) for small_arm_pos
@@ -4209,7 +4209,7 @@ Removing Unused input sections from the image.
     Removing myostasks.o(.ARM.exidx.text.Claw_Echo_Func), (8 bytes).
     Removing claw.o(.text), (0 bytes).
     Removing claw.o(.ARM.exidx.text.Claw_Init), (8 bytes).
-    Removing claw.o(.ARM.exidx.text.Change_HP_to_Degree), (8 bytes).
+    Removing claw.o(.ARM.exidx.text.Motor_Move), (8 bytes).
     Removing mystate.o(.text), (0 bytes).
     Removing mystate.o(.ARM.exidx.text.State_IDLE), (8 bytes).
     Removing mystate.o(.ARM.exidx.text.MySM_Init), (8 bytes).
@@ -4469,7 +4469,7 @@ Image Symbol Table
     [Anonymous Symbol]                       0x0800084c   Section        0  can_queue.o(.text.CAN_Queue_IfEmpty)
     [Anonymous Symbol]                       0x08000864   Section        0  can_queue.o(.text.CAN_Queue_IfFull)
     [Anonymous Symbol]                       0x08000894   Section        0  math_func.o(.text.ChangeDataByte)
-    [Anonymous Symbol]                       0x080008b8   Section        0  claw.o(.text.Change_HP_to_Degree)
+    [Anonymous Symbol]                       0x080008b8   Section        0  claw.o(.text.Motor_Move)
     Clamp                                    0x08000aa1   Thumb Code    80  djmotor.o(.text.Clamp)
     [Anonymous Symbol]                       0x08000aa0   Section        0  djmotor.o(.text.Clamp)
     ClampPeak                                0x08000af1   Thumb Code    88  djmotor.o(.text.ClampPeak)
@@ -4833,12 +4833,12 @@ Image Symbol Table
     uxCriticalNesting                        0x200000d0   Data           4  port.o(.data.uxCriticalNesting)
     [Anonymous Symbol]                       0x200000d0   Section        0  port.o(.data.uxCriticalNesting)
     .bss                                     0x200000d8   Section       96  libspace.o(.bss)
-    Change_HP_to_Degree.Initialized          0x20000390   Data           4  claw.o(.bss.Change_HP_to_Degree.Initialized)
-    [Anonymous Symbol]                       0x20000390   Section        0  claw.o(.bss.Change_HP_to_Degree.Initialized)
-    Change_HP_to_Degree.Reference_Degree     0x20000394   Data          16  claw.o(.bss.Change_HP_to_Degree.Reference_Degree)
-    [Anonymous Symbol]                       0x20000394   Section        0  claw.o(.bss.Change_HP_to_Degree.Reference_Degree)
-    Change_HP_to_Degree.Reference_HP         0x200003a4   Data          16  claw.o(.bss.Change_HP_to_Degree.Reference_HP)
-    [Anonymous Symbol]                       0x200003a4   Section        0  claw.o(.bss.Change_HP_to_Degree.Reference_HP)
+    Motor_Move.Initialized          0x20000390   Data           4  claw.o(.bss.Motor_Move.Initialized)
+    [Anonymous Symbol]                       0x20000390   Section        0  claw.o(.bss.Motor_Move.Initialized)
+    Motor_Move.Reference_Degree     0x20000394   Data          16  claw.o(.bss.Motor_Move.Reference_Degree)
+    [Anonymous Symbol]                       0x20000394   Section        0  claw.o(.bss.Motor_Move.Reference_Degree)
+    Motor_Move.Reference_HP         0x200003a4   Data          16  claw.o(.bss.Motor_Move.Reference_HP)
+    [Anonymous Symbol]                       0x200003a4   Section        0  claw.o(.bss.Motor_Move.Reference_HP)
     DJmotor_CurrentTransmit.tx_data          0x20000b84   Data           8  djmotor.o(.bss.DJmotor_CurrentTransmit.tx_data)
     [Anonymous Symbol]                       0x20000b84   Section        0  djmotor.o(.bss.DJmotor_CurrentTransmit.tx_data)
     HAL_RCC_CAN1_CLK_ENABLED                 0x20000b8c   Data           4  can.o(.bss.HAL_RCC_CAN1_CLK_ENABLED)
@@ -5134,7 +5134,7 @@ Image Symbol Table
     CAN_Queue_IfEmpty                        0x0800084d   Thumb Code    22  can_queue.o(.text.CAN_Queue_IfEmpty)
     CAN_Queue_IfFull                         0x08000865   Thumb Code    46  can_queue.o(.text.CAN_Queue_IfFull)
     ChangeDataByte                           0x08000895   Thumb Code    34  math_func.o(.text.ChangeDataByte)
-    Change_HP_to_Degree                      0x080008b9   Thumb Code   486  claw.o(.text.Change_HP_to_Degree)
+    Motor_Move                      0x080008b9   Thumb Code   486  claw.o(.text.Motor_Move)
     ClawEventEcho                            0x08000b49   Thumb Code    42  mystate.o(.text.ClawEventEcho)
     Claw_Echo_Func                           0x08000b75   Thumb Code    28  myostasks.o(.text.Claw_Echo_Func)
     Claw_Init                                0x08000b91   Thumb Code    42  claw.o(.text.Claw_Init)
@@ -5516,7 +5516,7 @@ Memory Map of the image
     0x08000892   0x08000892   0x00000002   PAD
     0x08000894   0x08000894   0x00000022   Code   RO         1963    .text.ChangeDataByte  math_func.o
     0x080008b6   0x080008b6   0x00000002   PAD
-    0x080008b8   0x080008b8   0x000001e6   Code   RO         2204    .text.Change_HP_to_Degree  claw.o
+    0x080008b8   0x080008b8   0x000001e6   Code   RO         2204    .text.Motor_Move  claw.o
     0x08000a9e   0x08000a9e   0x00000002   PAD
     0x08000aa0   0x08000aa0   0x00000050   Code   RO         2124    .text.Clamp         djmotor.o
     0x08000af0   0x08000af0   0x00000058   Code   RO         2120    .text.ClampPeak     djmotor.o
@@ -5957,9 +5957,9 @@ Memory Map of the image
     0x2000013c        -       0x00000004   Zero   RW           51    .bss.BeepTaskHandle  freertos.o
     0x20000140        -       0x00000128   Zero   RW         1954    .bss.CAN1_Txqueue   can_queue.o
     0x20000268        -       0x00000128   Zero   RW         1955    .bss.CAN2_Txqueue   can_queue.o
-    0x20000390        -       0x00000004   Zero   RW         2210    .bss.Change_HP_to_Degree.Initialized  claw.o
-    0x20000394        -       0x00000010   Zero   RW         2209    .bss.Change_HP_to_Degree.Reference_Degree  claw.o
-    0x200003a4        -       0x00000010   Zero   RW         2208    .bss.Change_HP_to_Degree.Reference_HP  claw.o
+    0x20000390        -       0x00000004   Zero   RW         2210    .bss.Motor_Move.Initialized  claw.o
+    0x20000394        -       0x00000010   Zero   RW         2209    .bss.Motor_Move.Reference_Degree  claw.o
+    0x200003a4        -       0x00000010   Zero   RW         2208    .bss.Motor_Move.Reference_HP  claw.o
     0x200003b4        -       0x00000010   Zero   RW         2207    .bss.Claw           claw.o
     0x200003c4        -       0x00000004   Zero   RW           52    .bss.ClawEcho_TaskHandle  freertos.o
     0x200003c8        -       0x00000001   Zero   RW         2234    .bss.ClawEvent      mystate.o

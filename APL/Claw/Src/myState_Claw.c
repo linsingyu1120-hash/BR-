@@ -47,14 +47,14 @@ SM_State *State_GetSky(SM_StateMachine *stateMachine, const SM_Event *event)
         switch (getsky_phase)
         {
         case 1: // 爪子下降到指定高度
-            Change_HP_to_Degree(Claw.lift_motor, lift_height.GetSky);
+            Motor_Move(Claw.lift_motor, lift_height.GetSky);
             break;
 
         case 2: // 爪子翻转，大臂/小臂调整角度，开爪
             solenoid_on(CLAW_SOLENOID_CHANNEL, 1);
-            Change_HP_to_Degree(Claw.big_arm_motor, big_arm_pos.GetSky);
-            osDelay(100);
-            Change_HP_to_Degree(Claw.small_arm_motor, small_arm_pos.GetSky);
+            Claw_Delay(500);
+            Motor_Move(Claw.big_arm_motor, big_arm_pos.GetSky);
+            Motor_Move(Claw.small_arm_motor, small_arm_pos.GetSky);
             break;
 
         case 3: // 关爪夹取天空块
@@ -62,7 +62,8 @@ SM_State *State_GetSky(SM_StateMachine *stateMachine, const SM_Event *event)
             break;
 
         case 4: // 爪子翻转，存入机构体内，开爪
-            Change_HP_to_Degree(Claw.big_arm_motor, big_arm_pos.InMachine);
+            Motor_Move(Claw.big_arm_motor, big_arm_pos.InMachine);
+            Claw_Delay(500);
             solenoid_on(CLAW_SOLENOID_CHANNEL, 1);
             break;
 
@@ -94,23 +95,23 @@ SM_State *State_PutSky(SM_StateMachine *stateMachine, const SM_Event *event)
         {
         case 1: // 关爪夹取体内天空块，爪子翻转出体外
             solenoid_on(CLAW_SOLENOID_CHANNEL, 0);
-            osDelay(100);
-            Change_HP_to_Degree(Claw.big_arm_motor, big_arm_pos.PutSky);
+            Claw_Delay(500);
+            Motor_Move(Claw.big_arm_motor, big_arm_pos.PutSky);
             break;
 
         case 2: // 爪子上升到指定高度
-            Change_HP_to_Degree(Claw.lift_motor, lift_height.PutSky);
+            Motor_Move(Claw.lift_motor, lift_height.PutSky);
             break;
 
         case 3: // 小臂调整角度，开爪
             solenoid_on(CLAW_SOLENOID_CHANNEL, 1);
-            Change_HP_to_Degree(Claw.small_arm_motor, small_arm_pos.PutSky);
+            Claw_Delay(500);
+            Motor_Move(Claw.small_arm_motor, small_arm_pos.PutSky);
             break;
 
         case 4: // 爪子下降到指定高度，翻转进体内
-            Change_HP_to_Degree(Claw.lift_motor, lift_height.GetSky);
-            osDelay(100);
-            Change_HP_to_Degree(Claw.big_arm_motor, big_arm_pos.InMachine);
+            Motor_Move(Claw.lift_motor, lift_height.GetSky);
+            Motor_Move(Claw.big_arm_motor, big_arm_pos.InMachine);
             break;
 
         default:
@@ -140,22 +141,22 @@ SM_State *State_SpinSky(SM_StateMachine *stateMachine, const SM_Event *event)
         switch (spinsky_phase)
         {
         case 1: // 爪子翻转出体外
-            Change_HP_to_Degree(Claw.big_arm_motor, big_arm_pos.PutSky);
+            Motor_Move(Claw.big_arm_motor, big_arm_pos.PutSky);
             break;
         case 2: // 爪子上升到指定高度
-            Change_HP_to_Degree(Claw.lift_motor, lift_height.PutSky);
+            Motor_Move(Claw.lift_motor, lift_height.PutSky);
             break;
         case 3: // 根据对方天空块的摆放情况，调整大臂/小臂/手腕角度
             solenoid_on(CLAW_SOLENOID_CHANNEL, 1);
-            Change_HP_to_Degree(Claw.small_arm_motor, small_arm_pos.PutSky);
+            Motor_Move(Claw.small_arm_motor, small_arm_pos.PutSky);
             break;
         case 4: // 关爪夹取天空块，爪子抬升一小段距离
             solenoid_on(CLAW_SOLENOID_CHANNEL, 0);
-            osDelay(100);
-            Change_HP_to_Degree(Claw.lift_motor, lift_height.SpinSkyUp);
+            Claw_Delay(100);
+            Motor_Move(Claw.lift_motor, lift_height.SpinSkyUp);
             break;
         case 5: // 爪子旋转
-            Change_HP_to_Degree(Claw.rotation_motor, rotation_pos.SpinSky);
+            Motor_Move(Claw.rotation_motor, rotation_pos.SpinSky);
             break;
         case 6: // 开爪放天空块
             solenoid_on(CLAW_SOLENOID_CHANNEL, 1);
@@ -163,12 +164,12 @@ SM_State *State_SpinSky(SM_StateMachine *stateMachine, const SM_Event *event)
             break;
         case 7: // 关爪，爪子下降到指定高度
             solenoid_on(CLAW_SOLENOID_CHANNEL, 0);
-            osDelay(100);
-            Change_HP_to_Degree(Claw.lift_motor, lift_height.GetSky);
+            Claw_Delay(100);
+            Motor_Move(Claw.lift_motor, lift_height.GetSky);
 
             break;
         case 8: // 爪子翻转进体内
-            Change_HP_to_Degree(Claw.big_arm_motor, big_arm_pos.InMachine);
+            Motor_Move(Claw.big_arm_motor, big_arm_pos.InMachine);
             break;
         default:
             break;
