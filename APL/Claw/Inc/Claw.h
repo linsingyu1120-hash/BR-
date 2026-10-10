@@ -4,7 +4,7 @@
 #include "djmotor.h"
 #include "zdrive.h"
 
-#define CLAW_SOLENOID_CHANNEL 3U // 后续可能需要修改，和main.c中的 solenoid_init(3) 保持一致
+#define CLAW_SOLENOID_CHANNEL 1U // 后续可能需要修改，和main.c中的 solenoid_init(3) 保持一致
 
 typedef struct
 {
