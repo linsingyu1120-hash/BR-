@@ -4,7 +4,7 @@
 #include "djmotor.h"
 #include "zdrive.h"
 
-#define CLAW_SOLENOID_CHANNEL 1U // 后续可能需要修改，和main.c中的 solenoid_init(3) 保持一致
+#define CLAW_SOLENOID_CHANNEL 3U // 后续可能需要修改，和main.c中的 solenoid_init(3) 保持一致
 
 typedef struct
 {
@@ -20,7 +20,7 @@ typedef struct
     float Current_Height;  // 当前高度（仅升降机构使用）
     float Current_Pos;     // 当前转角（仅升降机构不使用）
     float Target_deg;      // 目标角度（输出到DJ/zdrive模板中的valSet角度）
-    float Degree_Per_Unit; // 每升高1mm/转1°电机所需转动的角度（规定逆时针为正方向）
+    float Degree_Per_Unit; // 每升高1mm/转1°电机所需转动的角度
 } MotorDeg;
 
 typedef struct

@@ -23,6 +23,7 @@ extern "C"
         SM_EVENT_GETSKY, //去传递区天空块事件
         SM_EVENT_PUTSKY, //建塔放天空块事件
         SM_EVENT_SPINSKY, //翻转对方的天空块事件
+        SM_EVENT_SOLENOID,
 
         SM_EVENT_MOTIVATE,
         SM_EVENT_NOTMOTIVATE,

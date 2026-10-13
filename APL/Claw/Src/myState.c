@@ -10,6 +10,7 @@ SM_State IdleState = {State_IDLE, NULL, NULL}; // 父状态，遥控事件放在
 SM_State GetSkyState = {State_GetSky, &IdleState, NULL};
 SM_State PutSkyState = {State_PutSky, &IdleState, NULL};
 SM_State SpinSkyState = {State_SpinSky, &IdleState, NULL};
+SM_State SolenoidState = {State_Solenoid, &IdleState, NULL};
 
 SM_State MotivateState = {State_Motivate, &IdleState, NULL};
 SM_State NotMotivateState = {State_NotMotivate, &IdleState, NULL};
@@ -59,6 +60,10 @@ SM_State *State_IDLE(SM_StateMachine *stateMachine, const SM_Event *event)
         break;
     case SM_EVENT_SPINSKY:
         SM_TransitionTo(stateMachine, &SpinSkyState);
+        break;
+
+    case SM_EVENT_SOLENOID:
+        SM_TransitionTo(stateMachine, &SolenoidState);
         break;
 
     case SM_EVENT_MOTIVATE:

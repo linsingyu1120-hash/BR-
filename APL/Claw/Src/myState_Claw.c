@@ -5,10 +5,10 @@
 /*爪子任务静态变量*/
 volatile BigArmPos big_arm_pos =
     {
-        .GetSky = 190.0f,
-        .PutSky = 170.0f,
-        .OutMachine = 180.0f,
-        .InMachine = 0.0f};
+        .GetSky = 30.0f,
+        .PutSky = 40.0f,
+        .OutMachine = 50.0f,
+        .InMachine = 0.0f}; //有关正方向定义转到 myState.h
 
 volatile SmallArmPos small_arm_pos =
     {
@@ -24,12 +24,13 @@ volatile RotationPos rotation_pos =
 volatile LiftHeight lift_height =
     {
         .GetSky = 0.0f,
-        .PutSky = 700.0f,
-        .SpinSkyUp = 720.0f};
+        .PutSky = 300.0f,
+        .SpinSkyUp = 320.0f};
 
 volatile uint8_t getsky_phase = 0;
 volatile uint8_t putsky_phase = 0;
 volatile uint8_t spinsky_phase = 0;
+volatile uint8_t solenoid_phase = 0;
 
 /*取传递区天空块*/
 SM_State *State_GetSky(SM_StateMachine *stateMachine, const SM_Event *event)
@@ -171,6 +172,38 @@ SM_State *State_SpinSky(SM_StateMachine *stateMachine, const SM_Event *event)
         case 8: // 爪子翻转进体内
             Motor_Move(Claw.big_arm_motor, big_arm_pos.InMachine);
             break;
+        default:
+            break;
+        }
+        break;
+    default:
+        return State_IDLE(stateMachine, event);
+    }
+    return NULL;
+}
+
+SM_State *State_Solenoid(SM_StateMachine *stateMachine, const SM_Event *event)
+{
+    switch (event->type)
+    {
+    case SM_EVENT_ENTRY:
+        ClawEvent.type = SM_EVENT_SOLENOID;
+        break;
+    case SM_EVENT_EXIT: // 退出状态时的操作
+        ClawEvent.type = SM_EVENT_IDLE;
+        break;
+
+    case SM_EVENT_SOLENOID:
+        switch (solenoid_phase)
+        {
+        case 1: // 开爪
+            solenoid_on(CLAW_SOLENOID_CHANNEL, 1);
+            break;
+
+        case 2: // 关爪
+            solenoid_on(CLAW_SOLENOID_CHANNEL, 0);
+            break;
+
         default:
             break;
         }

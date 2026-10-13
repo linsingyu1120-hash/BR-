@@ -153,42 +153,37 @@
         <Ww>
           <count>0</count>
           <WinNumber>1</WinNumber>
-          <ItemText>tx_mailbox</ItemText>
+          <ItemText>ClawEvent.type</ItemText>
         </Ww>
         <Ww>
           <count>1</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Zmotor</ItemText>
+          <ItemText>getsky_phase</ItemText>
         </Ww>
         <Ww>
           <count>2</count>
           <WinNumber>1</WinNumber>
-          <ItemText>ClawEvent.type</ItemText>
+          <ItemText>putsky_phase</ItemText>
         </Ww>
         <Ww>
           <count>3</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Claw_SM.isInitialized</ItemText>
+          <ItemText>spinsky_phase</ItemText>
         </Ww>
         <Ww>
           <count>4</count>
           <WinNumber>1</WinNumber>
-          <ItemText>getsky_phase</ItemText>
+          <ItemText>solenoid_phase</ItemText>
         </Ww>
         <Ww>
           <count>5</count>
           <WinNumber>1</WinNumber>
-          <ItemText>rotation_pos</ItemText>
+          <ItemText>DJmotor</ItemText>
         </Ww>
         <Ww>
           <count>6</count>
           <WinNumber>1</WinNumber>
-          <ItemText>DJmotor</ItemText>
-        </Ww>
-        <Ww>
-          <count>7</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>big_arm_pos</ItemText>
+          <ItemText>Zmotor</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>

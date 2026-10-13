@@ -16,13 +16,13 @@ typedef struct
     float PutSky;
     float OutMachine;
     float InMachine;
-} BigArmPos;
+} BigArmPos; //规定大臂电机向外旋转为正
 
 typedef struct
 {
     float GetSky;
     float PutSky;
-} SmallArmPos;
+} SmallArmPos; //规定小臂电机向外旋转为正
 
 typedef struct
 {
@@ -36,7 +36,7 @@ typedef struct
     float GetSky;
     float PutSky;
     float SpinSkyUp;
-} LiftHeight;
+} LiftHeight; //规定抬升电机向上运动为正
 
 /* --- 全局变量 extern 声明 --- */
 extern SM_StateMachine Claw_SM;
@@ -60,6 +60,7 @@ extern SM_State SpinSkyState;
 SM_State *State_GetSky(SM_StateMachine *stateMachine, const SM_Event *event);
 SM_State *State_PutSky(SM_StateMachine *stateMachine, const SM_Event *event);
 SM_State *State_SpinSky(SM_StateMachine *stateMachine, const SM_Event *event);
+SM_State *State_Solenoid(SM_StateMachine *stateMachine, const SM_Event *event);
 SM_State *State_Motivate(SM_StateMachine *stateMachine, const SM_Event *event);
 SM_State *State_NotMotivate(SM_StateMachine *stateMachine, const SM_Event *event);
 SM_State *State_Zero(SM_StateMachine *stateMachine, const SM_Event *event);

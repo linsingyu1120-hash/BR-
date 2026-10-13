@@ -17,8 +17,8 @@ void Claw_Init(void)
 {
     Claw.big_arm_motor = &Zmotor[0];
     Claw.small_arm_motor = &DJmotor[0];
-    Claw.rotation_motor = &DJmotor[1];
-    Claw.lift_motor = &DJmotor[2];
+    Claw.rotation_motor = &DJmotor[2];
+    Claw.lift_motor = &DJmotor[1];
 }
 
 static void Claw_TrajectorySample(ClawTrajectory *Trajectory, uint32_t Tick) //五次多项式轨迹规划
@@ -101,7 +101,7 @@ void Motor_Move(const void *Motor, float Target_HP) // 选择的电机型号；�
 
     float Final_Degree = Reference_Degree[Motor_Index] + (Target_HP - Reference_HP[Motor_Index]) * motor_deg[Motor_Index].Degree_Per_Unit; //轨迹运动结束后的最终位置
     ClawTrajectory *Trajectory = &Claw_Trajectory[Motor_Index];
-    uint32_t Tick = HAL_GetTick();
+    uint32_t Tick = osKernelGetTickCount();
 
     Claw_TrajectorySample(Trajectory, Tick); //先取得旧轨迹在当前时刻的状态
     if (Trajectory->Motor != Motor || Trajectory->Target_Degree != Final_Degree) //判断是否需要建立新轨迹
